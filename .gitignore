@@ -1,0 +1,7 @@
+obj/
+bin/
+.clang-format
+.idea/
+*.kate-swp
+*.fuse_hidden*
+tmp/

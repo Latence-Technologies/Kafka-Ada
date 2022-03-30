@@ -1,0 +1,49 @@
+#
+# Welcome to the Gitlab CI for Kafka Ada
+# 
+# The CI pulls docker images from https://hub.docker.com/r/alexanderlatence/gprbuild 
+# to get gprbuild and builds the project in its intended way, using the following command:
+#
+# gprbuild kafka.gpr
+#
+# Then it retrieves the build Kafka Ada library that is in the root folder of the project
+#
+
+
+stages:
+  - build # every task only has a build stage for now
+
+gcc-9-job: # task to compile with gcc-9 and gcc-ada-9, uses Ubuntu 20
+  stage: build
+  script:
+     - mkdir -p obj bin
+     - docker pull alexanderlatence/gprbuild:9 # pulls the image (gprbuild:9 for gcc-9)
+     # runs the container, creates obj/ folder to compile, runs the gprbuild command (from /build9 inside the container) and then deletes the obj/ folder
+     - docker run --rm -v $(pwd):/build9 alexanderlatence/gprbuild:9 gprbuild -d /build9/kafkaada.gpr
+     - rm -rf obj
+  artifacts:
+    paths:
+      - bin/libkafka.a
+      
+gcc-10-job: # task to compile with gcc-10 and gcc-ada-10, uses Ubuntu 20
+  stage: build
+  script:
+     - mkdir -p obj bin
+     - docker pull alexanderlatence/gprbuild:10
+     - docker run --rm -v $(pwd):/build10 alexanderlatence/gprbuild:10 gprbuild -d /build10/kafkaada.gpr
+     - rm -rf obj
+  artifacts:
+    paths:
+      - bin/libkafka.a
+  
+gcc-11-job: # task to compile with gcc-11 and gcc-ada-11, uses Ubuntu 21
+  stage: build
+  script:
+     - mkdir -p obj bin
+     - docker pull alexanderlatence/gprbuild:11
+     - docker run --rm -v $(pwd):/build11 alexanderlatence/gprbuild:11 gprbuild -d /build11/kafkaada.gpr
+     - rm -rf obj
+  artifacts:
+    paths:
+      - bin/libkafka.a
+
