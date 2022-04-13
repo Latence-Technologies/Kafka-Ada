@@ -182,16 +182,16 @@ package Kafka is
 	Kafka_Error : exception;
 	Timeout_Reached : exception;
 
-    type Kafka_Handle is new System.Address;
-    type Kafka_Topic is new System.Address;
-    type Kafka_Config is new System.Address;
+    type Handle_Type is new System.Address;
+    type Topic_Type is new System.Address;
+    type Config_Type is new System.Address;
 
 	type Kafka_Handle_Type is (RD_KAFKA_PRODUCER, RD_KAFKA_CONSUMER)
    		with Convention => C;
 
 	type Kafka_Message is record
 		Error          : aliased Kafka_Response_Error_Type;
-		Topic          : Kafka_Topic;
+		Topic          : Topic_Type;
 		Partition      : aliased Integer_32;
 		Payload        : System.Address;
 		Payload_Length : aliased size_t;
@@ -202,24 +202,33 @@ package Kafka is
 	end record
 		with Convention => C_Pass_By_Copy;
 
-	type Delivery_Report_Callback is access procedure (Kafka   : Kafka_Handle;
+	type Delivery_Report_Callback is access procedure (Kafka   : Handle_Type;
                                                        Message : access constant Kafka_Message;
                                                        Opaque  : System.Address)
         with Convention => C;
 
 	--
-	-- Returns current Kafka version as Integer. Calls rd_kafka_version
-	-- internally
+	-- Returns the version of librdkafka as an Integer.
+	--
+	-- librdkafka equivalent: rd_kafka_version
 	--
     function Version return Integer
-        with
-            Import => True,
-            Convention => C,
-            External_Name => "rd_kafka_version";
+        with Import => True,
+             Convention => C,
+             External_Name => "rd_kafka_version";
+            
+	--
+	-- Returns the version of librdkafka as a String
+	--
+	-- librdkafka equivalent: rd_kafka_version_str
+	--
+	function Version return String;
 
 	--
 	-- Return the last error encountered by Kafka. The last error is stored
 	-- per thread.
+	--
+	-- librdkafka equivalent: rd_kafka_last_error
 	--
 	function Get_Last_Error return Kafka_Response_Error_Type
 		with Import => True,
@@ -230,46 +239,17 @@ package Kafka is
 	--
 	-- Returns the name of a kafka error given an error code
 	--
+	-- librdkafka equivalent: rd_kafka_err2name
+	--
 	function Get_Error_Name(Error_Code: Kafka_Response_Error_Type) return String;
-
-	--
-	-- Creates a new kafka config object
-	--
-	function Create_Config return Kafka_Config
-		with Import => True,
-             Convention => C,
-             External_Name => "rd_kafka_conf_new";
-
-	--
-	-- Destroys a kafka config object
-	--
-    procedure Destroy_Config(Config : Kafka_Config)
-        with Import => True,
-             Convention => C,
-             External_Name => "rd_kafka_conf_destroy";
-
-	--
-	-- Duplicates a kafka config object
-	--
-    function Duplicate_Config (Config : Kafka_Config) return Kafka_Config
-        with Import => True,
-             Convention => C,
-             External_Name => "rd_kafka_conf_dup";
-
-	--
-	-- Sets a kafka config property for a given kafka config.
-	--
-	-- Raises a Kafka_Error on error
-	--
-	procedure Set_Config(Config : Kafka_Config;
-						 Name   : String;
-						 Value  : String);
 
 	--
 	-- Sets the callback for listening to messages that are being produced, for
 	-- the provided configuration object
 	--
-	procedure Set_Delivery_Report_Callback(Config     : Kafka_Config;
+	-- librdkafka equivalent: rd_kafka_conf_set_dr_msg_cb
+	--
+	procedure Set_Delivery_Report_Callback(Config     : Config_Type;
 										   Callback   : Delivery_Report_Callback)
         with Import => True,
              Convention => C,
@@ -279,13 +259,17 @@ package Kafka is
 	--
 	-- Creates a kafka handle
 	--
+	-- librdkafka equivalent: rd_kafka_new
+	--
 	function Create_Handle(HandleType : Kafka_Handle_Type;
-                           Config 	  : Kafka_Config) return Kafka_Handle;
+                           Config 	  : Config_Type) return Handle_Type;
 
     --
     -- Destroys the specified kafka handle
     --
-	procedure Destroy_Handle(Handle : Kafka_Handle)
+    -- librdkafka equivalent: rd_kafka_destroy
+    --
+	procedure Destroy_Handle(Handle : Handle_Type)
 		with Import => True,
 			 Convention => C,
 			 External_Name => "rd_kafka_destroy";
@@ -296,32 +280,54 @@ package Kafka is
     -- to make sure all queued and in-flight produce requests are completed
     -- before terminating.
     --
-    -- Throws Timeout_Reached if Timeout was reached before all outstanding
-    -- requests were completed.
+    -- @raises Timeout_Reached if Timeout was reached before all outstanding requests were completed.
+    -- @raises Kafka_Error if an error occurs
 	--
-	procedure Flush(Handle  : Kafka_Handle;
+	procedure Flush(Handle  : Handle_Type;
 				    Timeout : Duration);
 
 	--
 	-- Polls the provided kafka handle for events. Events will cause application
 	-- provided callbacks to be called.
 	--
-	-- Returns the number of events served.
+	-- librdkafka equivalent: rd_kafka_poll
 	--
-	function Poll(Handle  : Kafka_Handle;
+	-- @params Handle Kafka handle
+	-- @params Timeout timeout for polling events
+	-- @returns the number of events served.
+	--
+	function Poll(Handle  : Handle_Type;
 				  Timeout : Duration) return Integer;
 
 	--
     -- Polls the provided kafka handle for events. Events will cause application
     -- provided callbacks to be called.
     --
-	procedure Poll(Handle  : Kafka_Handle;
+	-- librdkafka equivalent: rd_kafka_poll
+    --
+	-- @params Handle Kafka handle
+	-- @params Timeout timeout for polling events
+    --
+	procedure Poll(Handle  : Handle_Type;
 				   Timeout : Duration);
+
+	--
+	-- Redirect the main poll queue to the Kafka Consumer queue. It is not 
+	-- permitted to call Poll after directing the main queue with Poll_Set_Consumer
+	--
+	-- librdkafka equivalent: rd_kafka_poll_set_consumer
+	--
+	-- @param Handle Kafka handle 
+	-- @raises Kafka_Error if an error happens
+	--
+	procedure Poll_Set_Consumer(Handle : Handle_Type);
 
 	--
 	-- Produce and send a single message to broker.
 	--
-	procedure Produce(Topic          : Kafka_Topic;
+	-- librdkafka equivalent: rd_kafka_produce
+	--
+	procedure Produce(Topic          : Topic_Type;
 					  Partition      : Integer_32;
 					  Message_Flags  : Kafka_Message_Flag_Type;
 					  Payload        : System.Address;
@@ -334,83 +340,59 @@ package Kafka is
 	-- Produce and send a single message to broker where both the payload and
 	-- key are strings that will be copied
 	--
-	procedure Produce(Topic          : Kafka_Topic;
+	-- librdkafka equivalent: rd_kafka_produce
+	--
+	procedure Produce(Topic          : Topic_Type;
 					  Partition      : Integer_32;
 					  Payload        : String;
 					  Key            : String;
 					  Message_Opaque : System.Address);
 
-	--
-	-- Creates a handle for a given topic. Does not perform the admin command
-	-- to create a topic
-	--
-	function Create_Topic_Handle(Handle : Kafka_Handle;
-								 Topic  : String;
-								 Config : Kafka_Config) return Kafka_Topic;
-
-	--
-	-- Destroys the specified topic handle
-	--
-	procedure Destroy_Topic_Handle(Topic : Kafka_Topic)
-		with Import => True,
-		    Convention => C,
-		    External_Name => "rd_kafka_topic_destroy";
-
-	--
-	-- Returns the name of a given topic
-	--
-	function Get_Name(Topic : Kafka_Topic) return String;
-
-	--
-	-- Returns the name of a given topic
-	--
-	function Get_Opaque(Topic : Kafka_Topic) return System.Address
-		with Import => True,
-		    Convention => C,
-		    External_Name => "rd_kafka_topic_opaque";
 private
 
 	--
 	-- The following functions are used by wrapper functions due to the lack of
 	-- convenience (either because of chars_ptr or their error handling)
 	--
-
-	function rd_kafka_conf_set(conf        : Kafka_Config;
-							   name        : chars_ptr;
-	                           value       : chars_ptr;
-	                           errstr      : chars_ptr;
-	                           errstr_size : size_t) return Integer
+	
+	function rd_kafka_version_str return Interfaces.C.Strings.chars_ptr
 		with Import => True,
-		    Convention => C,
-		    External_Name => "rd_kafka_conf_set";
+			 Convention => C,
+			 External_Name => "rd_kafka_version_str";
 
 	function rd_kafka_err2name(Error_Code: Kafka_Response_Error_Type) return Interfaces.C.Strings.chars_ptr
 		with Import => True,
 		     Convention => C,
 		     External_Name => "rd_kafka_err2name";
 
+
    	function rd_kafka_new(c_type 	  : Kafka_Handle_Type;
-      					  conf 		  : Kafka_Config;
+      					  conf 		  : Config_Type;
 						  errstr 	  : chars_ptr;
-      					  errstr_size : size_t) return Kafka_Handle
+      					  errstr_size : size_t) return Handle_Type
    		with Import => True, 
         	 Convention => C, 
         	 External_Name => "rd_kafka_new";
 
-	function rd_kafka_flush(rk         : Kafka_Handle;
+	function rd_kafka_flush(rk         : Handle_Type;
 							timeout_ms : int) return Kafka_Response_Error_Type
 		with Import => True,
 			 Convention => C,
 			 External_Name => "rd_kafka_flush";
 
 
-	function rd_kafka_poll(rk         : Kafka_Handle;
+	function rd_kafka_poll(rk         : Handle_Type;
 				           timeout_ms : int) return int
 		with Import => True,
 			 Convention => C,
 			 External_Name => "rd_kafka_poll";
+			 
+	function rd_kafka_poll_set_consumer(rk : Handle_Type) return Kafka_Response_Error_Type
+		with Import => True,
+			 Convention => C,
+			 External_Name => "rd_kafka_poll_set_consumer";
 
-	function rd_kafka_produce(Topic          : Kafka_Topic;
+	function rd_kafka_produce(Topic          : Topic_Type;
     			     		  Partition      : Integer_32;
 					 		  Message_Flags  : Kafka_Message_Flag_Type;
     			     		  Payload        : System.Address;
@@ -421,20 +403,6 @@ private
 		with Import => True,
 			 Convention => C,
 			 External_Name => "rd_kafka_produce";
-
-
-	function rd_kafka_topic_new(Handle : Kafka_Handle;
-								Topic  : chars_ptr;
-								Config : Kafka_Config) return Kafka_Topic
-		with Import => True,
-		     Convention => C,
-		     External_Name => "rd_kafka_topic_new";
-
-
-	function rd_kafka_topic_name(Topic : Kafka_Topic) return chars_ptr
-		with Import => True,
-		    Convention => C,
-		    External_Name => "rd_kafka_topic_name";
 
 end Kafka;
 

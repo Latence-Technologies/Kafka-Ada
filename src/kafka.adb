@@ -1,56 +1,33 @@
 pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
 
-with System.Parameters;
-with System.Address_To_Access_Conversions;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
+with System.Parameters;
+with System.Address_To_Access_Conversions;
 
 package body Kafka is
-
 	Error_Buffer_Size : constant size_t := 512;
-	RD_Kafka_Conf_OK  : constant Integer := 0;
 
 	function Memory_Alloc(Size : size_t) return chars_ptr;
 	pragma Import (C, Memory_Alloc, System.Parameters.C_Malloc_Linkname);
+
+	function Version return String is
+	begin
+		return Interfaces.C.Strings.Value(rd_kafka_version_str);
+	end;
 
 	function Get_Error_Name(Error_Code: Kafka_Response_Error_Type) return String is
 	begin
 		return Interfaces.C.Strings.Value(rd_kafka_err2name(Error_Code));
 	end;
 
-	procedure Set_Config(Config : Kafka_Config;
-						 Name   : String;
-						 Value  : String) is
-		C_Name  : chars_ptr := New_String(Name);
-		C_Value : chars_ptr := New_String(Value);
-		C_Err   : chars_ptr := Memory_Alloc(Error_Buffer_Size);
-		Result  : Integer;
-	begin
-		Result := rd_kafka_conf_set(Config, C_Name, C_Value, C_Err, Error_Buffer_Size);
-
-		if Result /= RD_Kafka_Conf_OK then
-			declare
-				Error : String := Interfaces.C.Strings.Value(C_Err);
-			begin
-				Free(C_Name);
-				Free(C_Value);
-				Free(C_Err);
-				raise Kafka_Error with Error;
-			end;
-		end if;
-
-		Free(C_Name);
-		Free(C_Value);
-		Free(C_Err);
-	end Set_Config;
-
 	function Create_Handle(HandleType : Kafka_Handle_Type;
-                           Config 	  : Kafka_Config) return Kafka_Handle is
+                           Config 	  : Config_Type) return Handle_Type is
 		C_Err  : chars_ptr := Memory_Alloc(Error_Buffer_Size);
-		Handle : Kafka_Handle;
+		Handle : Handle_Type;
 	begin
 		Handle := rd_kafka_new(HandleType, Config, C_Err, Error_Buffer_Size);
-		if Handle = Kafka_Handle(System.Null_Address) then
+		if Handle = Handle_Type(System.Null_Address) then
 			declare
 				Error : String := Interfaces.C.Strings.Value(C_Err);
 			begin
@@ -63,7 +40,7 @@ package body Kafka is
 		return Handle;
 	end Create_Handle;
 
-	procedure Flush(Handle  : Kafka_Handle;
+	procedure Flush(Handle  : Handle_Type;
 				    Timeout : Duration) is
 		Response : Kafka_Response_Error_Type;
 	begin
@@ -76,36 +53,29 @@ package body Kafka is
 		end if;
 	end Flush;
 
-	function Poll(Handle  : Kafka_Handle;
+	function Poll(Handle  : Handle_Type;
 				  Timeout : Duration) return Integer is
 	begin
 		return Integer(rd_kafka_poll(Handle, int(Timeout * 1000)));
 	end Poll;
 
-	procedure Poll(Handle  : Kafka_Handle;
+	procedure Poll(Handle  : Handle_Type;
                    Timeout : Duration) is
 		Result : Integer;
 	begin
 		Result := Poll(Handle, Timeout);
 	end Poll;
-
-	function Create_Topic_Handle(Handle : Kafka_Handle;
-								 Topic  : String;
-								 Config : Kafka_Config) return Kafka_Topic is
-		C_Topic      : chars_ptr := New_String(Topic);
-		Topic_Handle : Kafka_Topic;
+	
+	procedure Poll_Set_Consumer(Handle : Handle_Type) is
+		Response : Kafka_Response_Error_Type;
 	begin
-		Topic_Handle := rd_kafka_topic_new(Handle, C_Topic, Config);
-		Free(C_Topic);
-		return Topic_Handle;
-	end;
+		Response := rd_kafka_poll_set_consumer(Handle);
+		if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
+	        raise Kafka_Error with "Error returned by rd_kafka_poll_set_consumer: " & Response'Image;
+	    end if;
+	end Poll_Set_Consumer;
 
-	function Get_Name(Topic : Kafka_Topic) return String is
-	begin
-		return Interfaces.C.Strings.Value(rd_kafka_topic_name(Topic));
-	end;
-
-	procedure Produce(Topic          : Kafka_Topic;
+	procedure Produce(Topic          : Topic_Type;
 					  Partition      : Integer_32;
 					  Message_Flags  : Kafka_Message_Flag_Type;
 					  Payload        : System.Address;
@@ -122,7 +92,7 @@ package body Kafka is
 		end if;
 	end Produce;
 
-	procedure Produce(Topic          : Kafka_Topic;
+	procedure Produce(Topic          : Topic_Type;
 					  Partition      : Integer_32;
 					  Payload        : String;
 					  Key            : String;
