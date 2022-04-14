@@ -3,13 +3,18 @@ project KafkaAda is
     for Source_Dirs use ("src/**");
     for Object_Dir use "obj";
 
-    for Interfaces use ("kafka.ads");
+    for Interfaces use ("kafka.ads", 
+                        "kafka-config.ads", 
+                        "kafka-consumer.ads", 
+                        "kafka-message.ads", 
+                        "kafka-topic.ads", 
+                        "kafka-topic-partition.ads");
 
-	for Library_Name use "kafka";
-	for Library_Dir use "bin";
-	for Library_Kind use "dynamic";
+    for Library_Name use "kafka";
+    for Library_Dir use "bin";
+    for Library_Kind use "dynamic";
 
     package Compiler is
         for Switches ("Ada") use ("-gnatX");
-   	end Compiler;
+    end Compiler;
 end KafkaAda;
