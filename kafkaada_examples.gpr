@@ -4,12 +4,12 @@ project KafkaAda_Examples is
     for Object_Dir use "obj";
     for Exec_Dir use "bin";
 
-    for Main use ("simple_producer.adb");
+    for Main use ("simple_producer.adb", "simple_consumer.adb");
 
     package Compiler is
         for Switches ("Ada") use ("-gnatX");
-   	end Compiler;
-	package Linker is
+    end Compiler;
+    package Linker is
         for Switches ("Ada") use ("-lrdkafka");
-	end Linker;
+    end Linker;
 end KafkaAda_Examples;
