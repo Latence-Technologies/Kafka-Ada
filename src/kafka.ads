@@ -5,6 +5,10 @@ with Interfaces;           use Interfaces;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
 
+--
+-- Provides functionality to create Kafka handles for a connection instance,
+-- as well as Poll, Flush, Produce and Subscribe to topics
+--
 package Kafka is
 
     subtype Kafka_Response_Error_Type is Integer;

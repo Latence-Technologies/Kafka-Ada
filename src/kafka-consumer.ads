@@ -5,6 +5,9 @@ with Interfaces;           use Interfaces;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
 
+--
+-- Provides Kafka functionality to consume data
+--
 package Kafka.Consumer is
     
     --

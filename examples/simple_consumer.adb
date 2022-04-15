@@ -11,6 +11,9 @@ with Kafka.Topic.Partition;
 with Signal;
 with System;
 
+--
+-- Basic Kafka consumer
+--
 procedure Simple_Consumer is
     use type System.Address;
     use type Interfaces.C.size_t;
@@ -18,9 +21,12 @@ procedure Simple_Consumer is
     Config : Kafka.Config_Type;
     Handle : Kafka.Handle_Type;
     
-    Handler : Signal.Handler;
+    Handler : Signal.Handler; -- basic Signal handler to stop on CTRL + C
 begin
+	-- Create configuration
     Config := Kafka.Config.Create;
+
+    -- Configure
     -- see librdkafka documentation on how to configure your Kafka consumer
     -- Kafka-Ada does not add any configuration entries of its own
     Kafka.Config.Set(Config, "group.id", GNAT.Sockets.Host_name);

@@ -5,6 +5,9 @@ with Interfaces;           use Interfaces;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
 
+--
+-- Provides kafka functionality to interact with Topics
+--
 package Kafka.Topic is
     
     --

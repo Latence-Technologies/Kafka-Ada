@@ -1,4 +1,8 @@
 
+--
+-- Provides Kafka functionality to create partition lists for a kafka consumer
+-- to subscribe to
+--
 package Kafka.Topic.Partition is
     
     --

@@ -5,6 +5,10 @@ with Interfaces;           use Interfaces;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
 
+--
+-- Provides the ability to create a configuration to be used when creating a
+-- Kafka handle
+--
 package Kafka.Config is
     
     --

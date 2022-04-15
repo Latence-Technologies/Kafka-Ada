@@ -5,6 +5,9 @@ with Interfaces;           use Interfaces;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
 
+--
+-- Provides Kafka functionality to manage messages
+--
 package Kafka.Message is
     --
     -- Frees resources for the specified Message and hands ownership back to 

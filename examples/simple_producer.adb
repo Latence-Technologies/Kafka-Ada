@@ -6,6 +6,9 @@ with Kafka.Config;
 with Kafka.Topic;
 with System;
 
+--
+-- Basic Kafka producer
+--
 procedure Simple_Producer is
     Config : Kafka.Config_Type;
     Handle : Kafka.Handle_Type;
@@ -13,21 +16,27 @@ procedure Simple_Producer is
 begin
     Ada.Text_IO.Put_Line("Kafka version: " & Kafka.Version);
 
+	-- Create a new config object
     Config := Kafka.Config.Create;
+
+    -- Configure your properties
     Kafka.Config.Set(Config, "client.id", GNAT.Sockets.Host_name);
     Kafka.Config.Set(Config, "bootstrap.servers", "localhost:9092");
 
+	-- Create handle
     Handle := Kafka.Create_Handle(Kafka.RD_KAFKA_PRODUCER, Config);
+
+    -- Create topic handle
     Topic := Kafka.Topic.Create_Topic_Handle(Handle, "test_topic", Config); -- topic must already exist
 
-    -- String example
+    -- Producing a String
     Kafka.Produce(Topic,
         Kafka.RD_KAFKA_PARTITION_UA,
-        "World",
-        "Hello",
+        "World", -- payload
+        "Hello", -- key
         System.Null_Address);
 
-    -- binary data example
+    -- Producing binary data
     declare
         type Some_Message is record
             A : Interfaces.Unsigned_32;
