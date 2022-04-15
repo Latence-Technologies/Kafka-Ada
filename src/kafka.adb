@@ -49,7 +49,7 @@ package body Kafka is
         if Response = RD_KAFKA_RESP_ERR_u_TIMED_OUT then
             raise Timeout_Reached;
         elsif Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
-            raise Kafka_Error with "Unknown error returned by rd_kafka_flush: " & Response'Image;
+            raise Kafka_Error with "Unknown error returned by rd_kafka_flush: " & Kafka.Get_Error_Name(Response);
         end if;
     end Flush;
 
@@ -123,7 +123,7 @@ package body Kafka is
         Response := rd_kafka_subscribe(Handle, Partition_List);
         
         if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
-            raise Kafka_Error with "Error returned by rd_kafka_subscribe: " & Response'Image;
+            raise Kafka_Error with "Error returned by rd_kafka_subscribe: " & Kafka.Get_Error_Name(Response);
         end if;
     end Subscribe;
     
@@ -133,7 +133,7 @@ package body Kafka is
         Response := rd_kafka_unsubscribe(Handle);
         
         if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
-            raise Kafka_Error with "Error returned by rd_kafka_unsubscribe: " & Response'Image;
+            raise Kafka_Error with "Error returned by rd_kafka_unsubscribe: " & Kafka.Get_Error_Name(Response);
         end if;
     end Unsubscribe;
 end Kafka;

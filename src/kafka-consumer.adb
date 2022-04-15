@@ -12,7 +12,7 @@ package body Kafka.Consumer is
     begin
         Response := rd_kafka_poll_set_consumer(Handle);
         if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
-            raise Kafka_Error with "Error returned by rd_kafka_poll_set_consumer: " & Response'Image;
+            raise Kafka_Error with "Error returned by rd_kafka_poll_set_consumer: " & Kafka.Get_Error_Name(Response);
         end if;
     end Poll_Set_Consumer;
     
@@ -27,7 +27,7 @@ package body Kafka.Consumer is
     begin
         Response := rd_kafka_consumer_close(Handle);
         if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
-            raise Kafka_Error with "Error returned by rd_kafka_consumer_close: " & Response'Image;
+            raise Kafka_Error with "Error returned by rd_kafka_consumer_close: " & Kafka.Get_Error_Name(Response);
         end if;
     end Close;
 end Kafka.Consumer;
