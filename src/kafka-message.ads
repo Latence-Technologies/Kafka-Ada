@@ -37,6 +37,6 @@ private
     function rd_kafka_message_errstr(Message : access constant Message_Type) return chars_ptr
         with Import => True,
              Convention => C,
-             External_Name => "rd_kafka_message_errstr";
+             External_Name => "rd_kafka_message_errstr_wrapper";
              
 end Kafka.Message;
