@@ -115,23 +115,23 @@ package body Kafka is
                 Key_Bytes'Length,
                 Message_Opaque);
     end Produce;
-    
+
     procedure Subscribe(Handle         : Handle_Type;
                         Partition_List : Partition_List_Type) is
         Response : Kafka_Response_Error_Type;
     begin
         Response := rd_kafka_subscribe(Handle, Partition_List);
-        
+
         if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
             raise Kafka_Error with "Error returned by rd_kafka_subscribe: " & Kafka.Get_Error_Name(Response);
         end if;
     end Subscribe;
-    
+
     procedure Unsubscribe(Handle : Handle_Type) is
         Response : Kafka_Response_Error_Type;
     begin
         Response := rd_kafka_unsubscribe(Handle);
-        
+
         if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
             raise Kafka_Error with "Error returned by rd_kafka_unsubscribe: " & Kafka.Get_Error_Name(Response);
         end if;

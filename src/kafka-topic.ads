@@ -9,7 +9,7 @@ with Interfaces.C.Strings; use Interfaces.C.Strings;
 -- Provides kafka functionality to interact with Topics
 --
 package Kafka.Topic is
-    
+
     --
     -- Creates a handle for a given topic. Does not perform the admin command
     -- to create a topic
@@ -32,7 +32,7 @@ package Kafka.Topic is
 
     --
     -- Returns the name of a given topic
-    -- 
+    --
     -- librdkafka equivalent: rd_kafka_topic_name
     --
     function Get_Name(Topic : Topic_Type) return String;
@@ -46,9 +46,9 @@ package Kafka.Topic is
         with Import => True,
             Convention => C,
             External_Name => "rd_kafka_topic_opaque";
-            
+
 private
-    
+
     function rd_kafka_topic_new(Handle : Handle_Type;
                                 Topic  : chars_ptr;
                                 Config : Config_Type) return Topic_Type

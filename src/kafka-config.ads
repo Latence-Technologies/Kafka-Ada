@@ -10,7 +10,7 @@ with Interfaces.C.Strings; use Interfaces.C.Strings;
 -- Kafka handle
 --
 package Kafka.Config is
-    
+
     --
     -- Creates a new kafka config object
     --
@@ -59,7 +59,7 @@ package Kafka.Config is
                   Name   : String;
                   Value  : String);
 private
-    
+
     function rd_kafka_conf_set(conf        : Config_Type;
                                name        : chars_ptr;
                                value       : chars_ptr;

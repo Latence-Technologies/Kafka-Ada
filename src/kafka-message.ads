@@ -10,7 +10,7 @@ with Interfaces.C.Strings; use Interfaces.C.Strings;
 --
 package Kafka.Message is
     --
-    -- Frees resources for the specified Message and hands ownership back to 
+    -- Frees resources for the specified Message and hands ownership back to
     -- rdkafka.
     --
     -- librdkafka equivalent: rd_kafka_message_destroy
@@ -22,21 +22,21 @@ package Kafka.Message is
 
     --
     -- Returns the error string for an errored Message or empty string if there
-    -- was no error. 
+    -- was no error.
     --
     -- This function MUST NOT be used with the producer.
-    -- 
+    --
     -- librdkafka equivalent: rd_kafka_message_errstr
     --
     -- @param Message message to get the error of
     -- @returns string describing the error
-    -- 
+    --
     function Get_Error(Message : access constant Message_Type) return String;
 private
-             
+
     function rd_kafka_message_errstr(Message : access constant Message_Type) return chars_ptr
         with Import => True,
              Convention => C,
              External_Name => "rd_kafka_message_errstr_wrapper";
-             
+
 end Kafka.Message;

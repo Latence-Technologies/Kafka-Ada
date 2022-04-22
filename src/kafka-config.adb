@@ -11,7 +11,7 @@ package body Kafka.Config is
 
     function Memory_Alloc(Size : size_t) return chars_ptr;
     pragma Import (C, Memory_Alloc, System.Parameters.C_Malloc_Linkname);
-    
+
     procedure Set(Config : Config_Type;
                   Name   : String;
                   Value  : String) is
