@@ -413,6 +413,10 @@ private
              Convention => C,
              External_Name => "rd_kafka_unsubscribe";
 
+    function Alloc(Size : size_t) return Chars_Ptr
+        with Import => True,
+             Convention => C,
+             External_Name => System.Parameters.C_Malloc_Linkname;
 
 end Kafka;
 

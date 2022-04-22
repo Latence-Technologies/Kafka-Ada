@@ -9,15 +9,12 @@ package body Kafka.Config is
     Error_Buffer_Size : constant size_t := 512;
     RD_Kafka_Conf_OK  : constant Integer := 0;
 
-    function Memory_Alloc(Size : size_t) return chars_ptr;
-    pragma Import (C, Memory_Alloc, System.Parameters.C_Malloc_Linkname);
-
     procedure Set(Config : Config_Type;
                   Name   : String;
                   Value  : String) is
         C_Name  : chars_ptr := New_String(Name);
         C_Value : chars_ptr := New_String(Value);
-        C_Err   : chars_ptr := Memory_Alloc(Error_Buffer_Size);
+        C_Err   : chars_ptr := Alloc(Error_Buffer_Size);
         Result  : Integer;
     begin
         Result := rd_kafka_conf_set(Config, C_Name, C_Value, C_Err, Error_Buffer_Size);

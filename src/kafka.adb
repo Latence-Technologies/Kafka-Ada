@@ -8,9 +8,6 @@ with System.Address_To_Access_Conversions;
 package body Kafka is
     Error_Buffer_Size : constant size_t := 512;
 
-    function Memory_Alloc(Size : size_t) return chars_ptr;
-    pragma Import (C, Memory_Alloc, System.Parameters.C_Malloc_Linkname);
-
     function Version return String is
     begin
         return Interfaces.C.Strings.Value(rd_kafka_version_str);
@@ -23,7 +20,7 @@ package body Kafka is
 
     function Create_Handle(HandleType : Kafka_Handle_Type;
                            Config     : Config_Type) return Handle_Type is
-        C_Err  : chars_ptr := Memory_Alloc(Error_Buffer_Size);
+        C_Err  : chars_ptr := Alloc(Error_Buffer_Size);
         Handle : Handle_Type;
     begin
         Handle := rd_kafka_new(HandleType, Config, C_Err, Error_Buffer_Size);
