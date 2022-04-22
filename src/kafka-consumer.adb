@@ -1,10 +1,3 @@
-pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
-
-with Interfaces.C;         use Interfaces.C;
-with Interfaces.C.Strings; use Interfaces.C.Strings;
-with System.Parameters;
-with System.Address_To_Access_Conversions;
-
 package body Kafka.Consumer is
 
     procedure Poll_Set_Consumer(Handle : Handle_Type) is

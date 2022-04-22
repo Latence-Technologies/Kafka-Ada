@@ -1,8 +1,3 @@
-pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
-
-with Interfaces.C;         use Interfaces.C;
-with Interfaces.C.Strings; use Interfaces.C.Strings;
-with System.Parameters;
 with System.Address_To_Access_Conversions;
 
 package body Kafka is
@@ -134,5 +129,3 @@ package body Kafka is
         end if;
     end Unsubscribe;
 end Kafka;
-
-pragma Warnings (On, "use of this unit is non-portable and version-dependent");

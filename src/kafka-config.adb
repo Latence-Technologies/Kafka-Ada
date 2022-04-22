@@ -1,10 +1,3 @@
-pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
-
-with Interfaces.C;         use Interfaces.C;
-with Interfaces.C.Strings; use Interfaces.C.Strings;
-with System.Parameters;
-with System.Address_To_Access_Conversions;
-
 package body Kafka.Config is
     Error_Buffer_Size : constant size_t := 512;
     RD_Kafka_Conf_OK  : constant Integer := 0;
