@@ -85,7 +85,7 @@ package body Kafka is
         -- Does not matter since we are passing length to the C function, specifying the bound
         pragma Warnings (Off, "To_Pointer results may not have bounds");
         package Byte_Conv is new System.Address_To_Access_Conversions(Byte_Array);
-        pragma Warnings (On, "To_Pointer results may not have bounds");
+        pragma Warnings (On);
 
         Payload_Bytes : aliased Byte_Array := (1 .. Payload'Length => 0);
         Key_Bytes     : aliased Byte_Array := (1 .. Key'Length => 0);

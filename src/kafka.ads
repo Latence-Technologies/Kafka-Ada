@@ -1,6 +1,8 @@
 pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
+private with System.Parameters;
+pragma Warnings (On);
 
-with System.Parameters;
+with System;
 with Interfaces;           use Interfaces;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
@@ -419,5 +421,3 @@ private
              External_Name => System.Parameters.C_Malloc_Linkname;
 
 end Kafka;
-
-pragma Warnings (On, "use of this unit is non-portable and version-dependent");
