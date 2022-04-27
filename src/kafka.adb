@@ -1,15 +1,7 @@
-pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
-
-with Interfaces.C;         use Interfaces.C;
-with Interfaces.C.Strings; use Interfaces.C.Strings;
-with System.Parameters;
 with System.Address_To_Access_Conversions;
 
 package body Kafka is
     Error_Buffer_Size : constant size_t := 512;
-
-    function Memory_Alloc(Size : size_t) return chars_ptr;
-    pragma Import (C, Memory_Alloc, System.Parameters.C_Malloc_Linkname);
 
     function Version return String is
     begin
@@ -23,7 +15,7 @@ package body Kafka is
 
     function Create_Handle(HandleType : Kafka_Handle_Type;
                            Config     : Config_Type) return Handle_Type is
-        C_Err  : chars_ptr := Memory_Alloc(Error_Buffer_Size);
+        C_Err  : chars_ptr := Alloc(Error_Buffer_Size);
         Handle : Handle_Type;
     begin
         Handle := rd_kafka_new(HandleType, Config, C_Err, Error_Buffer_Size);
@@ -93,7 +85,7 @@ package body Kafka is
         -- Does not matter since we are passing length to the C function, specifying the bound
         pragma Warnings (Off, "To_Pointer results may not have bounds");
         package Byte_Conv is new System.Address_To_Access_Conversions(Byte_Array);
-        pragma Warnings (On, "To_Pointer results may not have bounds");
+        pragma Warnings (On);
 
         Payload_Bytes : aliased Byte_Array := (1 .. Payload'Length => 0);
         Key_Bytes     : aliased Byte_Array := (1 .. Key'Length => 0);
@@ -115,27 +107,25 @@ package body Kafka is
                 Key_Bytes'Length,
                 Message_Opaque);
     end Produce;
-    
+
     procedure Subscribe(Handle         : Handle_Type;
                         Partition_List : Partition_List_Type) is
         Response : Kafka_Response_Error_Type;
     begin
         Response := rd_kafka_subscribe(Handle, Partition_List);
-        
+
         if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
             raise Kafka_Error with "Error returned by rd_kafka_subscribe: " & Kafka.Get_Error_Name(Response);
         end if;
     end Subscribe;
-    
+
     procedure Unsubscribe(Handle : Handle_Type) is
         Response : Kafka_Response_Error_Type;
     begin
         Response := rd_kafka_unsubscribe(Handle);
-        
+
         if Response /= RD_KAFKA_RESP_ERR_NO_ERROR then
             raise Kafka_Error with "Error returned by rd_kafka_unsubscribe: " & Kafka.Get_Error_Name(Response);
         end if;
     end Unsubscribe;
 end Kafka;
-
-pragma Warnings (On, "use of this unit is non-portable and version-dependent");

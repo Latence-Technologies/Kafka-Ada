@@ -1,16 +1,9 @@
-pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
-
-with System.Parameters;
-with Interfaces;           use Interfaces;
-with Interfaces.C;         use Interfaces.C;
-with Interfaces.C.Strings; use Interfaces.C.Strings;
-
 --
 -- Provides the ability to create a configuration to be used when creating a
 -- Kafka handle
 --
 package Kafka.Config is
-    
+
     --
     -- Creates a new kafka config object
     --
@@ -59,7 +52,7 @@ package Kafka.Config is
                   Name   : String;
                   Value  : String);
 private
-    
+
     function rd_kafka_conf_set(conf        : Config_Type;
                                name        : chars_ptr;
                                value       : chars_ptr;

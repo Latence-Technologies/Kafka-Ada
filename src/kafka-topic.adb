@@ -1,10 +1,3 @@
-pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
-
-with System.Parameters;
-with System.Address_To_Access_Conversions;
-with Interfaces.C;         use Interfaces.C;
-with Interfaces.C.Strings; use Interfaces.C.Strings;
-
 package body Kafka.Topic is
     function Create_Topic_Handle(Handle : Handle_Type;
                                  Topic  : String;

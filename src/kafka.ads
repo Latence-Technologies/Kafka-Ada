@@ -1,6 +1,8 @@
 pragma Warnings (Off, "use of this unit is non-portable and version-dependent");
+private with System.Parameters;
+pragma Warnings (On);
 
-with System.Parameters;
+with System;
 with Interfaces;           use Interfaces;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
@@ -221,7 +223,7 @@ package Kafka is
         with Import => True,
              Convention => C,
              External_Name => "rd_kafka_version";
-            
+
     --
     -- Returns the version of librdkafka as a String
     --
@@ -347,7 +349,7 @@ package Kafka is
     --
     procedure Subscribe(Handle         : Handle_Type;
                         Partition_List : Partition_List_Type);
-                        
+
     --
     -- librdkafka equivalent: rd_kafka_unsubscribe
     --
@@ -358,7 +360,7 @@ private
     -- The following functions are used by wrapper functions due to the lack of
     -- convenience (either because of chars_ptr or their error handling)
     --
-    
+
     function rd_kafka_version_str return Interfaces.C.Strings.chars_ptr
         with Import => True,
              Convention => C,
@@ -373,8 +375,8 @@ private
                           conf        : Config_Type;
                           errstr      : chars_ptr;
                           errstr_size : size_t) return Handle_Type
-        with Import => True, 
-             Convention => C, 
+        with Import => True,
+             Convention => C,
              External_Name => "rd_kafka_new";
 
     function rd_kafka_flush(rk         : Handle_Type;
@@ -401,19 +403,21 @@ private
         with Import => True,
              Convention => C,
              External_Name => "rd_kafka_produce";
-             
+
     function rd_kafka_subscribe(Handle         : Handle_Type;
                                 Partition_List : Partition_List_Type) return Kafka_Response_Error_Type
         with Import => True,
              Convention => C,
              External_Name => "rd_kafka_subscribe";
-             
+
     function rd_kafka_unsubscribe(Handle : Handle_Type) return Kafka_Response_Error_Type
         with Import => True,
              Convention => C,
              External_Name => "rd_kafka_unsubscribe";
-                                
+
+    function Alloc(Size : size_t) return Chars_Ptr
+        with Import => True,
+             Convention => C,
+             External_Name => System.Parameters.C_Malloc_Linkname;
 
 end Kafka;
-
-pragma Warnings (On, "use of this unit is non-portable and version-dependent");
