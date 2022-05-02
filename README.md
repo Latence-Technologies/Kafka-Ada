@@ -2,11 +2,6 @@
 
 This project offers Ada bindings for the C librdkafka library. You can use it to send and receive from a Kafka bus from Ada. Currently work in progress, it does not offer all functionalities of librdkafka yet.
 
-## Latence Technologies
-
-This Ada binding is offered LatenceTech, a Montreal based startup specialized in low-latency optimization. Our website is https://latencetech.com/
-
-
 ## Install 
 
 To install this library on your system, run the following command:
@@ -21,3 +16,7 @@ Note: You need to have librdkafka already installed.
 
 See the `examples/` folder for code examples showcasing a basic consumer and a 
 basic producer using Kafka Ada.
+
+## Latence Technologies
+
+This Ada binding is offered by LatenceTech, a Montreal based startup specialized in low-latency optimization. Our website is https://latencetech.com/
