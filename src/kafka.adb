@@ -103,8 +103,8 @@ package body Kafka is
                 RD_KAFKA_MSG_F_COPY,
                 Byte_Conv.To_Address(Payload_Bytes'Access),
                 Payload_Bytes'Length,
-                Byte_Conv.To_Address(Key_Bytes'Access),
-                Key_Bytes'Length,
+                System.Null_Address,
+                0,
                 Message_Opaque);
     end Produce;
 
