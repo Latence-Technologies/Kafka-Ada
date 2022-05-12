@@ -16,18 +16,18 @@ procedure Simple_Producer is
 begin
     Ada.Text_IO.Put_Line("Kafka version: " & Kafka.Version);
 
-	-- Create a new config object
+    -- Create a new config object
     Config := Kafka.Config.Create;
 
     -- Configure your properties
     Kafka.Config.Set(Config, "client.id", GNAT.Sockets.Host_name);
     Kafka.Config.Set(Config, "bootstrap.servers", "localhost:9092");
 
-	-- Create handle
+    -- Create handle
     Handle := Kafka.Create_Handle(Kafka.RD_KAFKA_PRODUCER, Config);
 
     -- Create topic handle
-    Topic := Kafka.Topic.Create_Topic_Handle(Handle, "test_topic", Config); -- topic must already exist
+    Topic := Kafka.Topic.Create_Topic_Handle(Handle, "test_topic"); -- topic must already exist
 
     -- Producing a String
     Kafka.Produce(Topic,

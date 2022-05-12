@@ -11,7 +11,17 @@ package Kafka.Topic is
     --
     function Create_Topic_Handle(Handle : Handle_Type;
                                  Topic  : String;
-                                 Config : Config_Type) return Topic_Type;
+                                 Config : Topic_Config_Type) return Topic_Type;
+                                 
+                                 
+    --
+    -- Creates a handle for a given topic. Does not perform the admin command
+    -- to create a topic
+    --
+    -- librdkafka equivalent: rd_kafka_topic_new
+    --
+    function Create_Topic_Handle(Handle : Handle_Type;
+                                 Topic  : String) return Topic_Type;
 
     --
     -- Destroys the specified topic handle
@@ -44,7 +54,7 @@ private
 
     function rd_kafka_topic_new(Handle : Handle_Type;
                                 Topic  : chars_ptr;
-                                Config : Config_Type) return Topic_Type
+                                Config : Topic_Config_Type) return Topic_Type
         with Import => True,
              Convention => C,
              External_Name => "rd_kafka_topic_new";

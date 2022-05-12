@@ -191,6 +191,7 @@ package Kafka is
     type Handle_Type is new System.Address;
     type Topic_Type is new System.Address;
     type Config_Type is new System.Address;
+    type Topic_Config_Type is new System.Address;
     type Partition_List_Type is new System.Address;
 
     type Kafka_Handle_Type is (RD_KAFKA_PRODUCER, RD_KAFKA_CONSUMER)
