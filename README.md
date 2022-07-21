@@ -3,6 +3,7 @@
 This project offers Ada bindings for the C librdkafka library. You can use it to send and receive from a Kafka bus from Ada. Currently work in progress, it does not offer all functionalities of librdkafka yet. If what you are looking for is simply producing data onto a kafka bus or consuming data, this library likely already supports the features you need.
 
 Supported functionalities:
+
 - Basic error handling
 - Kafka handle creation and destruction
 - Topic handling
@@ -13,6 +14,7 @@ Supported functionalities:
 - Topic configuration
 
 Not yet supported:
+
 - Retrieving debug contexts
 - Advanced error handling (Description, fatal errors, retriable errors etc.)
 - Partition handling
@@ -31,7 +33,7 @@ Not yet supported:
 
 If you need some of those not supported features, feel free to open a pull request.
 
-## Building and installing from source 
+## Building and installing from source
 
 To install this library on your system, run the following command:
 
@@ -44,7 +46,7 @@ Note: You need to have librdkafka already installed.
 
 ## Usage
 
-See the `examples/` folder for code examples showcasing a basic consumer and a 
+See the `examples/` folder for code examples showcasing a basic consumer and a
 basic producer using Kafka Ada.
 
 ## Latence Technologies
