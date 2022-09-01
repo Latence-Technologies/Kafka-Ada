@@ -49,6 +49,8 @@ Note: You need to have librdkafka already installed.
 See the `examples/` folder for code examples showcasing a basic consumer and a
 basic producer using Kafka Ada.
 
+You can use the `-t` (or `--topic`) argument to change the name of the Kafka Topic when using either example.
+
 ## Latence Technologies
 
 This Ada binding is offered by LatenceTech, a Montreal based startup specialized in low-latency optimization. Our website is https://latencetech.com/
