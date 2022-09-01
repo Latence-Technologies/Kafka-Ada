@@ -9,6 +9,7 @@ with Kafka.Message;
 with Kafka.Topic;
 with Kafka.Topic.Partition;
 with Signal;
+with GetCommandArgument;
 with System;
 
 --
@@ -22,6 +23,7 @@ procedure Simple_Consumer is
     Handle : Kafka.Handle_Type;
     
     Handler : Signal.Handler; -- basic Signal handler to stop on CTRL + C
+    package KafkaTopic is new GetCommandArgument ("-t:", "--topic:", "Topic name to use");
 begin
 	-- Create configuration
     Config := Kafka.Config.Create;
@@ -41,7 +43,8 @@ begin
         Partition_List : Kafka.Partition_List_Type;
     begin
         Partition_List := Kafka.Topic.Partition.Create_List(1);
-        Kafka.Topic.Partition.List_Add(Partition_List, "test_topic", Kafka.RD_KAFKA_PARTITION_UA);
+        Kafka.Topic.Partition.List_Add(Partition_List,
+            KafkaTopic.Parse_Command_Line("test_topic"), Kafka.RD_KAFKA_PARTITION_UA);
         
         Kafka.Subscribe(Handle, Partition_List);
         Kafka.Topic.Partition.Destroy_List(Partition_List);
