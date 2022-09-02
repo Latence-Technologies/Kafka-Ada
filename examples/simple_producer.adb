@@ -5,6 +5,7 @@ with Kafka;
 with Kafka.Config;
 with Kafka.Topic;
 with System;
+with GetCommandArgument;
 
 --
 -- Basic Kafka producer
@@ -13,6 +14,8 @@ procedure Simple_Producer is
     Config : Kafka.Config_Type;
     Handle : Kafka.Handle_Type;
     Topic  : Kafka.Topic_Type;
+
+    package CommandTopic is new GetCommandArgument ("-t:", "--topic:", "Topic name to use");
 begin
     Ada.Text_IO.Put_Line("Kafka version: " & Kafka.Version);
 
@@ -27,7 +30,8 @@ begin
     Handle := Kafka.Create_Handle(Kafka.RD_KAFKA_PRODUCER, Config);
 
     -- Create topic handle
-    Topic := Kafka.Topic.Create_Topic_Handle(Handle, "test_topic"); -- topic must already exist
+    Topic := Kafka.Topic.Create_Topic_Handle(Handle,
+        CommandTopic.Parse_Command_Line("test_topic")); -- topic must already exist
 
     -- Producing a String
     Kafka.Produce(Topic,
